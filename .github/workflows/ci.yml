@@ -1,30 +1,28 @@
 name: CI Pipeline
+
 on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     env:
       OTEL_EXPORTER_JAEGER_ENDPOINT: ${{ secrets.JAEGER_ENDPOINT }}
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
-    - name: Make trace.sh executable
-      run: chmod +x ./trace.sh
 
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
         go-version: '1.18'
 
-    - name: Trace Go setup
-      run: ./trace.sh echo "Go ${{ steps.setup-go.outputs.go-version }} set up successfully"
-
     - name: Install dependencies
-      run: ./trace.sh go mod tidy
+      run: go mod tidy
 
     - name: Build the application
-      run: ./trace.sh go build -o myapp main.go
+      run: go build -o myapp main.go
 
-    - name: Run the application
-      run: ./trace.sh ./myapp
+    - name: Run the application with OpenTelemetry
+      run: ./myapp
