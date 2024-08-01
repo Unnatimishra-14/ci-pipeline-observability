@@ -1,6 +1,6 @@
 module ci-pipeline-observability
 
-go 1.28
+go 1.18
 
 require (
 	go.opentelemetry.io/otel v1.28.0
