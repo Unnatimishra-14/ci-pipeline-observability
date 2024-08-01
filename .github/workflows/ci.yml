@@ -1,31 +1,27 @@
 name: CI Pipeline
-
 on: [push]
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    env:
+      OTEL_EXPORTER_JAEGER_ENDPOINT: ${{ secrets.JAEGER_ENDPOINT }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
     - name: Set up Go
-      run: ./trace.sh actions/setup-go@v2 with: go-version: '1.18'
-      env:
-        OTEL_EXPORTER_JAEGER_ENDPOINT: ${{ secrets.JAEGER_ENDPOINT }}
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.18'
+
+    - name: Trace Go setup
+      run: ./trace.sh echo "Go ${{ steps.setup-go.outputs.go-version }} set up successfully"
 
     - name: Install dependencies
       run: ./trace.sh go mod tidy
-      env:
-        OTEL_EXPORTER_JAEGER_ENDPOINT: ${{ secrets.JAEGER_ENDPOINT }}
 
     - name: Build the application
       run: ./trace.sh go build -o myapp main.go
-      env:
-        OTEL_EXPORTER_JAEGER_ENDPOINT: ${{ secrets.JAEGER_ENDPOINT }}
 
     - name: Run the application
       run: ./trace.sh ./myapp
-      env:
-        OTEL_EXPORTER_JAEGER_ENDPOINT: ${{ secrets.JAEGER_ENDPOINT }}
