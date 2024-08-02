@@ -8,27 +8,44 @@ jobs:
       OTEL_EXPORTER_JAEGER_ENDPOINT: ${{ secrets.JAEGER_ENDPOINT }}
 
     steps:
+    - name: Setup OpenTelemetry
+      uses: MNThomson/otel-action@v1
+      with:
+        exporter: jaeger
+        jaeger-endpoint: ${{ secrets.JAEGER_ENDPOINT }}
+        service-name: github-actions-pipeline
+
     - name: Checkout code
       uses: actions/checkout@v3
+      env:
+        OTEL_SERVICE_NAME: checkout-code
 
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
         go-version: '1.21'
+      env:
+        OTEL_SERVICE_NAME: setup-go
 
     - name: Install dependencies
       run: go mod tidy
+      env:
+        OTEL_SERVICE_NAME: install-dependencies
 
     - name: Build the application
       run: go build -o pipeline_tracer main.go
+      env:
+        OTEL_SERVICE_NAME: build-application
 
     - name: Run the application and capture output
       run: |
         echo "Running pipeline tracer..."
         ./pipeline_tracer
       env:
-        OTEL_EXPORTER_JAEGER_ENDPOINT: ${{ secrets.JAEGER_ENDPOINT }}
+        OTEL_SERVICE_NAME: run-application
 
     - name: Check Jaeger endpoint
       run: |
         echo "Jaeger endpoint: $OTEL_EXPORTER_JAEGER_ENDPOINT"
+      env:
+        OTEL_SERVICE_NAME: check-jaeger-endpoint
