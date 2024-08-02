@@ -6,6 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OTEL_EXPORTER_JAEGER_ENDPOINT: ${{ secrets.JAEGER_ENDPOINT }}
+      OTEL_EXPORTER_HEADERS: ${{ secrets.JAEGER_HEADERS }}
 
     steps:
     - name: Checkout code
@@ -35,5 +36,5 @@ jobs:
       uses: MNThomson/otel-action@master
       with:
         endpoint: ${{ secrets.JAEGER_ENDPOINT }}
-        headers: ${{ secrets.HEADERS }}
+        headers: ${{ secrets.JAEGER_HEADERS }}
         service_name: "github-actions-pipeline"
