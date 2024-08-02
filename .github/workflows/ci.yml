@@ -19,11 +19,16 @@ jobs:
     - name: Install dependencies
       run: go mod tidy
 
-    - name: Build and run the application
-      run: |
-        go build -o pipeline_tracer main.go
-        ./pipeline_tracer
+    - name: Build the application
+      run: go build -o pipeline_tracer main.go
 
-    - name: Display Logs
-      if: always()
-      run: cat pipeline_tracer.log
+    - name: Run the application and capture output
+      run: |
+        echo "Running pipeline tracer..."
+        ./pipeline_tracer
+      env:
+        OTEL_EXPORTER_JAEGER_ENDPOINT: ${{ secrets.JAEGER_ENDPOINT }}
+
+    - name: Check Jaeger endpoint
+      run: |
+        echo "Jaeger endpoint: $OTEL_EXPORTER_JAEGER_ENDPOINT"

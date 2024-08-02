@@ -2,7 +2,7 @@ package main
 
 import (
     "context"
-    "log"
+    "fmt"
     "os"
     "time"
 
@@ -14,13 +14,14 @@ import (
 )
 
 func initTracer() func() {
-    log.Println("Initializing tracer...")
+    fmt.Println("Initializing tracer...")
     jaegerEndpoint := os.Getenv("OTEL_EXPORTER_JAEGER_ENDPOINT")
-    log.Printf("Jaeger Endpoint: %s", jaegerEndpoint)
+    fmt.Printf("Jaeger Endpoint: %s\n", jaegerEndpoint)
 
     exporter, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(jaegerEndpoint)))
     if err != nil {
-        log.Fatalf("Failed to create Jaeger exporter: %v", err)
+        fmt.Printf("Failed to create Jaeger exporter: %v\n", err)
+        os.Exit(1)
     }
 
     tp := sdktrace.NewTracerProvider(
@@ -31,11 +32,11 @@ func initTracer() func() {
         )),
     )
     otel.SetTracerProvider(tp)
-    log.Println("Tracer initialized successfully")
+    fmt.Println("Tracer initialized successfully")
 
     return func() {
         if err := tp.Shutdown(context.Background()); err != nil {
-            log.Printf("Error shutting down tracer provider: %v", err)
+            fmt.Printf("Error shutting down tracer provider: %v\n", err)
         }
     }
 }
@@ -48,17 +49,17 @@ func main() {
     ctx, span := tracer.Start(context.Background(), "main")
     defer span.End()
 
-    log.Println("Starting pipeline simulation")
+    fmt.Println("Starting pipeline simulation")
 
     // Simulating pipeline steps
     steps := []string{"Checkout code", "Set up Go", "Install dependencies", "Build application", "Run application"}
     for _, step := range steps {
         _, stepSpan := tracer.Start(ctx, step)
-        log.Printf("Executing step: %s", step)
+        fmt.Printf("Executing step: %s\n", step)
         time.Sleep(time.Second) // Simulate some work
         stepSpan.End()
-        log.Printf("Completed step: %s", step)
+        fmt.Printf("Completed step: %s\n", step)
     }
 
-    log.Println("Pipeline simulation completed")
+    fmt.Println("Pipeline simulation completed")
 }
