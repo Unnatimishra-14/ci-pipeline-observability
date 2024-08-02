@@ -2,7 +2,6 @@ package main
 
 import (
     "context"
-    "fmt"
     "log"
     "os"
     "time"
@@ -15,10 +14,15 @@ import (
 )
 
 func initTracer() func() {
-    exporter, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(os.Getenv("OTEL_EXPORTER_JAEGER_ENDPOINT"))))
+    log.Println("Initializing tracer...")
+    jaegerEndpoint := os.Getenv("OTEL_EXPORTER_JAEGER_ENDPOINT")
+    log.Printf("Jaeger Endpoint: %s", jaegerEndpoint)
+
+    exporter, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(jaegerEndpoint)))
     if err != nil {
-        log.Fatal(err)
+        log.Fatalf("Failed to create Jaeger exporter: %v", err)
     }
+
     tp := sdktrace.NewTracerProvider(
         sdktrace.WithBatcher(exporter),
         sdktrace.WithResource(resource.NewWithAttributes(
@@ -27,6 +31,8 @@ func initTracer() func() {
         )),
     )
     otel.SetTracerProvider(tp)
+    log.Println("Tracer initialized successfully")
+
     return func() {
         if err := tp.Shutdown(context.Background()); err != nil {
             log.Printf("Error shutting down tracer provider: %v", err)
@@ -42,14 +48,17 @@ func main() {
     ctx, span := tracer.Start(context.Background(), "main")
     defer span.End()
 
+    log.Println("Starting pipeline simulation")
+
     // Simulating pipeline steps
     steps := []string{"Checkout code", "Set up Go", "Install dependencies", "Build application", "Run application"}
     for _, step := range steps {
         _, stepSpan := tracer.Start(ctx, step)
-        fmt.Printf("Executing step: %s\n", step)
+        log.Printf("Executing step: %s", step)
         time.Sleep(time.Second) // Simulate some work
         stepSpan.End()
+        log.Printf("Completed step: %s", step)
     }
 
-    fmt.Println("Pipeline completed")
+    log.Println("Pipeline simulation completed")
 }

@@ -23,3 +23,7 @@ jobs:
       run: |
         go build -o pipeline_tracer main.go
         ./pipeline_tracer
+
+    - name: Display Logs
+      if: always()
+      run: cat pipeline_tracer.log
