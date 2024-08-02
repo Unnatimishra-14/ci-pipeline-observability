@@ -54,7 +54,7 @@ func main() {
     // Simulating pipeline steps
     steps := []string{"Checkout code", "Set up Go", "Install dependencies", "Build application", "Run application"}
     for _, step := range steps {
-        ctx, stepSpan := tracer.Start(ctx, step)
+        _, stepSpan := tracer.Start(ctx, step)
         fmt.Printf("Executing step: %s\n", step)
         time.Sleep(time.Second) // Simulate some work
         stepSpan.End()
