@@ -18,10 +18,12 @@ jobs:
       with:
         go-version: '1.21'
 
-    - name: Install OpenTelemetry Collector
+    - name: Download OpenTelemetry Collector
       run: |
-        curl -sSL https://raw.githubusercontent.com/open-telemetry/opentelemetry-collector/main/install.sh | sudo bash -s -- --version latest
-        sudo otelcol --version
+        curl -L https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.83.0/otelcol-contrib_0.83.0_linux_amd64.tar.gz -o otelcol.tar.gz
+        tar xzf otelcol.tar.gz
+        chmod +x otelcol-contrib
+        ./otelcol-contrib --version
 
     - name: Install otel-cli
       run: |
@@ -50,7 +52,7 @@ jobs:
               processors: [batch]
               exporters: [jaeger]
         EOF
-        sudo otelcol --config otel-config.yaml &
+        ./otelcol-contrib --config otel-config.yaml &
 
     - name: Install dependencies
       run: |
@@ -70,4 +72,4 @@ jobs:
     - name: Cleanup
       if: always()
       run: |
-        sudo pkill otelcol
+        pkill otelcol-contrib
