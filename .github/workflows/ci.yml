@@ -25,3 +25,4 @@ jobs:
       with:
         endpoint: https://8448-2401-4900-1c82-4453-dc7f-736d-e37b-2312.ngrok-free.app
         service_name: "simple-go-project-ci"
+      
