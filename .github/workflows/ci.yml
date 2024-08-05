@@ -1,40 +1,29 @@
-name: CI Pipeline with OpenTelemetry Tracing
-on: [push]
+name: Simple Go CI with Observability
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      OTEL_EXPORTER_JAEGER_ENDPOINT: ${{ secrets.JAEGER_ENDPOINT }}
-      OTEL_EXPORTER_HEADERS: ${{ secrets.JAEGER_HEADERS }}
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v2
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v2
       with:
-        go-version: '1.21'
+        go-version: 1.16
 
-    - name: Install dependencies
-      run: go mod tidy
-
-    - name: Build the application
-      run: go build -o pipeline_tracer main.go
-
-    - name: Run the application and capture output
-      run: |
-        echo "Running pipeline tracer..."
-        ./pipeline_tracer
-
-    - name: Check Jaeger endpoint
-      run: |
-        echo "Jaeger endpoint: $OTEL_EXPORTER_JAEGER_ENDPOINT"
+    - name: Build
+      run: go build -v ./...
 
     - name: Upload OTEL traces
       uses: MNThomson/otel-action@master
       with:
-        endpoint: ${{ secrets.JAEGER_ENDPOINT }}
-        headers: ${{ secrets.JAEGER_HEADERS }}
-        service_name: "github-actions-pipeline"
+        endpoint: ${{ secrets.GRAFANA_CLOUD_OTEL_ENDPOINT }}
+        headers: |
+          Authorization: Basic ${{ secrets.GRAFANA_CLOUD_API_KEY }}
+        service_name: "simple-go-project-ci"
