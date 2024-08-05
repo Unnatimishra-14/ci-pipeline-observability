@@ -1,21 +1,19 @@
-name: Simple Go CI with Observability
+name: CI Pipeline with Observability
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
-        go-version: 1.16
+        go-version: '1.16'
 
     - name: Build
       run: go build -v ./...
@@ -23,7 +21,6 @@ jobs:
     - name: Upload OTEL traces
       uses: MNThomson/otel-action@master
       with:
-        endpoint: ${{ secrets.GRAFANA_CLOUD_OTEL_ENDPOINT }}
-        headers: |
-          Authorization: Basic ${{ secrets.GRAFANA_CLOUD_API_KEY }}
-        service_name: "simple-go-project-ci"
+        endpoint: https://tempo-prod-19-prod-ap-south-1.grafana.net  # Grafana Cloud Tempo endpoint
+        headers: '{"Authorization": "Bearer ${{ secrets.GRAFANA_API_KEY }}"}'  # Use a secret for the API key
+        service_name: "simple-go-project-ci"  # Replace with your service name
