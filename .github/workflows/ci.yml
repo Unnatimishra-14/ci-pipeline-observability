@@ -20,9 +20,6 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Check OTEL endpoint
-      run: curl -I ${{ secrets.GRAFANA_CLOUD_OTEL_ENDPOINT }}
-
     - name: Upload OTEL traces
       uses: MNThomson/otel-action@master
       with:
@@ -30,6 +27,3 @@ jobs:
         headers: |
           Authorization: Basic ${{ secrets.GRAFANA_CLOUD_API_KEY }}
         service_name: "simple-go-project-ci"
-
-    - name: Check OTEL action logs
-      run: echo "OTEL action logs:" && cat /path/to/otel-action-logs
