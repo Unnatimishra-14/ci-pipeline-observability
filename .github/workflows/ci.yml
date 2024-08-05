@@ -23,7 +23,5 @@ jobs:
     - name: Upload OTEL traces
       uses: MNThomson/otel-action@master
       with:
-        endpoint: ${{ secrets.GRAFANA_CLOUD_OTEL_ENDPOINT }}
-        headers: |
-          Authorization: Basic ${{ secrets.GRAFANA_CLOUD_API_KEY }}
+        endpoint: https://8448-2401-4900-1c82-4453-dc7f-736d-e37b-2312.ngrok-free.app
         service_name: "simple-go-project-ci"
