@@ -27,4 +27,5 @@ jobs:
       uses: MNThomson/otel-action@master
       with:
         endpoint: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+        headers: ${{ secrets.OTEL_EXPORTER_OTLP_HEADERS }}
         service_name: "go-hello-world"
