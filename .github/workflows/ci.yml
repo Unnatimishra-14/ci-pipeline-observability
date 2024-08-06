@@ -1,26 +1,30 @@
-name: CI Pipeline with Observability
+name: Go CI with OpenTelemetry
 
-on: [push]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v4
       with:
-        go-version: '1.16'
+        go-version: '1.20'
 
     - name: Build
       run: go build -v ./...
 
+    - name: Test
+      run: go test -v ./...
+
     - name: Upload OTEL traces
       uses: MNThomson/otel-action@master
       with:
-        endpoint: https://tempo-prod-19-prod-ap-south-1.grafana.net  # Grafana Cloud Tempo endpoint
-        headers: '{"Authorization": "Bearer ${{ secrets.GRAFANA_API_KEY }}"}'  # Use a secret for the API key
-        service_name: "simple-go-project-ci"  # Replace with your service name
+        endpoint: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+        service_name: "go-hello-world"
