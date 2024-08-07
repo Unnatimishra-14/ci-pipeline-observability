@@ -29,6 +29,5 @@ jobs:
       - name: Export Workflow Trace
         uses: inception-health/otel-export-trace-action@latest
         with:
-          otlpEndpoint: 'api.honeycomb.io:443'
-          otlpHeaders: 'x-honeycomb-team=${{ secrets.HONEYCOMB_API_KEY }},x-honeycomb-dataset=${{ secrets.HONEYCOMB_DATASET }}'
-          
+          otlpEndpoint: grpc://api.honeycomb.io:443/
+          otlpHeaders: ${{ secrets.OTLP_HEADERS }}
