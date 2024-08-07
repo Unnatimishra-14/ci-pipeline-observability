@@ -1,26 +1,31 @@
-name: CI Pipeline with OTel
+name: Go CI with OpenTelemetry
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v4
       with:
-        go-version: '1.18'
+        go-version: '1.21'
 
-    - name: Build and run Go application
-      run: go run main.go
+    - name: Build
+      run: go build -v ./...
 
-    - name: Upload OTEL traces
-      uses: MNThomson/otel-action@master
+    - name: Test
+      run: go test -v ./...
+
+    - name: Send traces to OTLP
+      uses: codeboten/github-action-to-otlp@v1
       with:
-        endpoint: ${{ secrets.ENDPOINT }}
-        headers: '{"Content-Type": "application/json"}'
-        service_name: "HelloWorld"
+        endpoint: 'https://922b-2401-4900-1c82-4453-35f9-cc9-671a-e966.ngrok-free.app:443'
+        
+      
