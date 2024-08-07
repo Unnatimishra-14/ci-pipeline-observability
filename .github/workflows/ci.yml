@@ -22,5 +22,5 @@ jobs:
       uses: MNThomson/otel-action@master
       with:
         endpoint: ${{ secrets.ENDPOINT }}
-        headers: '{}'
+        headers: '{"Content-Type": "application/json"}'
         service_name: "HelloWorld"
