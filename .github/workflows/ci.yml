@@ -1,4 +1,4 @@
-name: Go CI 
+name: Hello world CI 
 
 on:
   push:
@@ -20,6 +20,7 @@ jobs:
     - name: Build
       run: go build -v ./...
 
+
   otel-export-trace:
     needs: [build]
     if: always()
@@ -29,5 +30,7 @@ jobs:
       - name: Export Workflow Trace
         uses: inception-health/otel-export-trace-action@latest
         with:
-          otlpEndpoint: grpc://api.honeycomb.io:443/
-          otlpHeaders: ${{ secrets.OTLP_HEADERS }}
+          otlpEndpoint: 'api.honeycomb.io:443'
+          otlpHeaders: 'x-honeycomb-team=${{ secrets.HONEYCOMB_API_KEY }},x-honeycomb-dataset=${{ secrets.HONEYCOMB_DATASET }}'
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+        
