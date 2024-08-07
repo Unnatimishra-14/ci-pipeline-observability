@@ -21,8 +21,7 @@ jobs:
         ./main
 
     - name: OTLP Exporter
-      uses: open-telemetry/github-action-to-otlp@v0.1
+      uses: codeboten/github-action-to-otlp@v1
       with:
         endpoint: "http://bd4b21d3db14a0845607c5bdffd14bcc.serveo.net:80"
-      env:
-        GRAFANA_API_KEY: ${{ secrets.GRAFANA_API_KEY }}
+        headers: "Authorization: Bearer ${{ secrets.GRAFANA_API_KEY }}"
