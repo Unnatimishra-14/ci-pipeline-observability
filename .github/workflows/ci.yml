@@ -22,4 +22,5 @@ jobs:
       uses: MNThomson/otel-action@master
       with:
         endpoint: ${{ secrets.ENDPOINT }}
+        headers: ''
         service_name: "HelloWorld"
