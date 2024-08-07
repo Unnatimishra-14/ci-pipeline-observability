@@ -20,6 +20,10 @@ jobs:
         go build -o main
         ./main
 
+    - name: Test connectivity to Serveo
+      run: |
+        curl -I http://bd4b21d3db14a0845607c5bdffd14bcc.serveo.net:80
+
     - name: OTLP Exporter
       uses: codeboten/github-action-to-otlp@v1
       with:
