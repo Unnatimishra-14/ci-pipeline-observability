@@ -1,8 +1,11 @@
-version: '3.7'
-
 services:
-  jaeger:
-    image: jaegertracing/all-in-one:1.27
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
-      - "16686:16686"
-      - "14268:14268"
+      - "4317:4317"
+      - "4318:4318"
+    environment:
+      - GRAFANA_API_KEY=${GRAFANA_API_KEY}
+    command: ["--config", "/etc/otel-collector-config.yaml"]

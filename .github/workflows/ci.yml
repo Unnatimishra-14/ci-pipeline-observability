@@ -1,30 +1,28 @@
-name: CI with OpenTelemetry
+name: OTel GitHub Action
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
-        go-version: 1.17
+        go-version: '1.17'
 
-    - name: Build
-      run: go build -v ./...
+    - name: Build and run Go application
+      run: |
+        go build -o main
+        ./main
 
-    - name: Test
-      run: go test -v ./...
-
-    - name: Send data to OTLP
-      uses: codeboten/github-action-to-otlp@v1
+    - name: OTLP Exporter
+      uses: open-telemetry/github-action-to-otlp@v0.1
       with:
-        endpoint: 'grpc://847b-2401-4900-1c82-4453-35f9-cc9-671a-e966.ngrok-free.app:443'
+        endpoint: "http://bd4b21d3db14a0845607c5bdffd14bcc.serveo.net:80"
+      env:
+        GRAFANA_API_KEY: ${{ secrets.GRAFANA_API_KEY }}
