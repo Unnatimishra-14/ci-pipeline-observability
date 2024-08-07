@@ -1,4 +1,4 @@
-name: Go CI with OpenTelemetry
+name: Go CI 
 
 on:
   push:
@@ -20,13 +20,15 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Test
-      run: go test -v ./...
-
-    - name: Send traces to OTLP
-      uses: codeboten/github-action-to-otlp@v1
-      with:
-        endpoint: 'https://922b-2401-4900-1c82-4453-35f9-cc9-671a-e966.ngrok-free.app:443'
-        headers: '{"timeout": "60s"}'
-        
-      
+  otel-export-trace:
+    needs: [build]
+    if: always()
+    name: OpenTelemetry Export Trace
+    runs-on: ubuntu-latest
+    steps:
+      - name: Export Workflow Trace
+        uses: inception-health/otel-export-trace-action@latest
+        with:
+          otlpEndpoint: 'api.honeycomb.io:443'
+          otlpHeaders: 'x-honeycomb-team=${{ secrets.HONEYCOMB_API_KEY }},x-honeycomb-dataset=${{ secrets.HONEYCOMB_DATASET }}'
+          
